@@ -19,10 +19,14 @@ export async function POST(req: NextRequest) {
     }
 
     const event = JSON.parse(rawBody);
+
+    // Safely extract custom data across different Lemon Squeezy payload structures
+    const customData = 
+      event?.data?.attributes?.custom_data || 
+      event?.meta?.custom_data || 
+      event?.data?.attributes?.checkout_data?.custom_data;
     
-    // Lemon Squeezy stores custom data inside event.data.attributes.custom_data or meta.custom_data
-    const customData = event.data?.attributes?.custom_data || event.meta?.custom_data;
-    const auditId = customData?.audit_id;
+    const auditId = customData?.audit_id || event?.meta?.custom_data?.audit_id;
 
     console.log("Webhook received event:", event.meta?.event_name, "for audit_id:", auditId);
 
